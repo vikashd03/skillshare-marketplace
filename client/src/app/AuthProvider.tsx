@@ -16,11 +16,7 @@ const AuthProvider = ({
     token && fetchUser();
   }, []);
 
-  return user ? (
-    children
-  ) : (
-    <div className="h-full flex items-center justify-center">Loading...</div>
-  );
+  return children;
 };
 
 export default AuthProvider;

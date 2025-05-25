@@ -18,11 +18,13 @@ const page = ({ children }: { children: ReactNode }) => {
     }
   }, [user?.role]);
 
-  return (
+  return user ? (
     <div>
       <NavBar />
       {children}
     </div>
+  ) : (
+    <div className="h-full flex items-center justify-center">Loading...</div>
   );
 };
 
