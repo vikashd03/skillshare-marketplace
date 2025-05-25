@@ -1,0 +1,40 @@
+{
+  "name": "rest-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "export TASK_GRPC_PROTO=$(pwd)/../shared/proto/ && ts-node-dev --respawn --transpile-only -r tsconfig-paths/register ./src/index.ts",
+    "build": "tsc && tsc-alias",
+    "start": "export TASK_GRPC_PROTO=$(pwd)/../shared/proto/ && node dist/index.js",
+    "generate:proto": "protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/proto --ts_proto_opt=outputServices=grpc-js,useExactTypes=false -I $(pwd)/../shared/proto $(pwd)/../shared/proto/task.proto",
+    "generate:prisma": "export PRISMA_CLIENT_OUTPUT=$(pwd)/src/prisma/ && npx prisma generate --schema=$(pwd)/../shared/prisma/schema.prisma"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.13.4",
+    "@grpc/proto-loader": "^0.7.15",
+    "@prisma/client": "^6.8.2",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "prisma": "^6.8.2",
+    "ts-proto": "^2.7.0",
+    "tsconfig-paths": "^4.2.0",
+    "zod": "^3.25.20"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.2",
+    "@types/node": "^22.15.21",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3"
+  }
+}

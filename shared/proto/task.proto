@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package task;
+
+service TaskService {
+  rpc CreateTask (CreateTaskRequest) returns (TaskResponse);
+  rpc GetTask (GetTaskRequest) returns (TaskResponse);
+  rpc ListMyTasks (ListMyTasksRequest) returns (ListTasksResponse);
+  rpc OfferForTask (OfferForTaskRequest) returns (UpdateTaskResponse);
+  rpc UpdateTaskOfferRsvp (UpdateTaskOfferRsvpRequest) returns (UpdateTaskResponse);
+  rpc UpdateTaskStatus (UpdateTaskStatusRequest) returns (UpdateTaskResponse);
+  rpc UpdateCompletionRsvp (UpdateCompletionRsvpRequest) returns (UpdateTaskResponse);
+}
+
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  TODO = 1;
+  STARTED = 2;
+  IN_PROGRESS = 3;
+  COMPLETED = 4;
+}
+
+enum RSVPStatus {
+  RSVP_STATUS_UNSPECIFIED = 0;
+  PENDING = 1;
+  ACCEPTED = 2;
+  REJECTED = 3;
+}
+
+enum Category {
+  CATEGORY_UNSPECIFIED = 0;
+  FRONTEND_DEVELOPMENT = 1;
+  CYBERSECURITY = 2;
+  DIGITAL_MARKETING = 3;
+  UI_UX_DESIGN = 4;
+  DATA_ENGINEERING = 5;
+}
+
+enum Currency {
+  CURRENCY_UNSPECIFIED = 0;
+  INR = 1;
+  USD = 2;
+  AUD = 3;
+  SGD = 4;
+}
+
+message CreateTaskRequest {
+  Category category = 1;
+  string name = 2;
+  string description = 3;
+  string expected_start_date = 4;
+  int32 expected_hours = 5;
+  string user_id = 8;
+  string provider_id = 9;
+}
+
+message GetTaskRequest {
+  string id = 1;
+}
+
+message TaskResponse {
+  string id = 1;
+  Category category = 2;
+  string name = 3;
+  string description = 4;
+  string expected_start_date = 5;
+  int32 expected_hours = 6;
+  optional double hourly_rate_offered = 7;
+  Currency rate_currency = 8;
+
+  string user_id = 9;
+  string provider_id = 10;
+
+  optional bool offered = 11;
+  TaskStatus task_status = 12;
+  RSVPStatus offer_rsvp = 13;
+  RSVPStatus completion_rsvp = 14;
+  string created_at = 15;
+  string updated_at = 16;
+}
+
+enum Role {
+  USER = 0;
+  PROVIDER = 1;
+}
+
+message ListMyTasksRequest {
+  string id = 1;
+  Role role = 2;
+}
+
+message ListTasksResponse {
+  repeated TaskResponse tasks = 1;
+}
+
+message OfferForTaskRequest {
+  string id = 1;
+  double hourly_rate_offered = 2;
+  Currency rate_currency = 3;
+}
+
+message UpdateTaskResponse {
+  string id = 1;
+}
+
+message UpdateTaskStatusRequest {
+  string id = 1;
+  TaskStatus task_status = 2;
+}
+
+message UpdateTaskOfferRsvpRequest {
+  string id = 1;
+  RSVPStatus offer_rsvp = 2;
+}
+
+message UpdateCompletionRsvpRequest {
+  string id = 1;
+  RSVPStatus completion_rsvp = 2;
+}

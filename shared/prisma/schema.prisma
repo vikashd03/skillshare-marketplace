@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = env("PRISMA_CLIENT_OUTPUT")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  role          Role     @default(USER)
+  user_type     UserType
+
+  // For INDIVIDUAL
+  name          String?
+
+  // For COMPANY
+  rep_name      String?
+  company_name  String?
+  tax_no        String?
+
+  // Common fields
+  ph_no         String
+  email         String   @unique
+  address       String?
+  password      String
+
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  provider_skills Skill[]  @relation("provider_skills")
+  user_tasks      Task[]   @relation("user_tasks")
+  provider_tasks  Task[]   @relation("provider_tasks")
+
+  @@map("users")
+}
+
+model Skill {
+  id           String   @id @default(uuid())
+  category     Category
+  experience   Int
+  nature       WorkMode
+  rate         Float
+  currency     Currency
+
+  // Provider who owns the Skill
+  provider_id   String
+  provider      User     @relation("provider_skills", fields: [provider_id], references: [id])
+
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("skills")
+}
+
+model Task {
+  id                  String   @id @default(uuid())
+  category            Category
+  name                String
+  description         String
+  expectedStartDate   DateTime @map("expected_start_date")
+  expectedHours       Int      @map("expected_hours")
+
+  // User who created the task
+  userId              String   @map("user_id")
+  user                User     @relation("user_tasks", fields: [userId], references: [id])
+
+  // User who owns the skill
+  providerId          String  @map("provider_id")
+  provider            User    @relation("provider_tasks", fields: [providerId], references: [id])
+
+  offered             Boolean    @default(false)
+  hourlyRateOffered   Float?     @map("hourly_rate_offered")
+  rateCurrency        Currency?  @map("rate_currency")
+
+  taskStatus          TaskStatus @default(TODO)     @map("task_status")
+  offerRsvp           RSVPStatus @default(PENDING)  @map("offer_rsvp")
+  completionRsvp      RSVPStatus @default(PENDING)  @map("completion_rsvp")
+
+  createdAt           DateTime   @default(now())    @map("created_at")
+  updatedAt           DateTime   @updatedAt         @map("updated_at")
+
+  @@map("tasks")
+}
+
+enum Role {
+  USER
+  PROVIDER
+}
+
+enum UserType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum Currency {
+  USD
+  AUD
+  SGD
+  INR
+}
+
+enum WorkMode {
+  ONSITE
+  ONLINE
+}
+
+enum TaskStatus {
+  TODO
+  STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum RSVPStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum Category {
+  FRONTEND_DEVELOPMENT
+  CYBERSECURITY
+  DIGITAL_MARKETING
+  UI_UX_DESIGN
+  DATA_ENGINEERING
+}
