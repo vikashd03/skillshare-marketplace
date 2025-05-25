@@ -1,13 +1,16 @@
 "use client";
 
+import AddEditTaskModal from "@/components/AddEditTaskModal";
+import DeleteModal from "@/components/DeleteModal";
 import Tasks from "@/components/Tasks";
 import { API_URL } from "@/utils/config";
-import { ROLE, TaskStatus } from "@/utils/constants";
+import { MODAL_TYPE, ROLE, TaskStatus } from "@/utils/constants";
 import { requestInterceptor } from "@/utils/helper";
 import {
   RSVPStatus,
   RSVPStatusLabelMap,
   TASK_FIELD,
+  TaskData,
   TaskDetails,
 } from "@/utils/types";
 import axios from "axios";
@@ -16,6 +19,15 @@ import React, { useEffect, useMemo, useState } from "react";
 const BrowseTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [search, setSearch] = useState("");
+  const [taskModal, setTaskModal] = useState<{
+    open: boolean;
+    type: MODAL_TYPE | "";
+    data: TaskData | undefined;
+  }>({
+    open: false,
+    type: "",
+    data: undefined,
+  });
 
   const fetchMyTasks = () => {
     axios.get(`${API_URL}/task/me`, requestInterceptor()).then((res) => {
@@ -76,8 +88,72 @@ const BrowseTasks = () => {
       });
   };
 
+  const handleEdit = (task: TaskDetails) => {
+    setTaskModal({
+      open: true,
+      data: task,
+      type: MODAL_TYPE.EDIT,
+    });
+  };
+
+  const handleDelete = (task: TaskDetails) => {
+    setTaskModal({
+      open: true,
+      data: task,
+      type: MODAL_TYPE.DELETE,
+    });
+  };
+
+  const handleDeleteTask = () => {
+    axios
+      .delete(`${API_URL}/task/${taskModal.data?.id}`, requestInterceptor())
+      .then(() => {
+        setTaskModal({ open: false, data: undefined, type: "" });
+        fetchMyTasks();
+      });
+  };
+
+  const handleUpdateTask = (data: TaskData) => {
+    axios
+      .put(`${API_URL}/task/${taskModal.data?.id}`, data, requestInterceptor())
+      .then(() => {
+        setTaskModal({
+          open: false,
+          type: "",
+          data: undefined,
+        });
+        fetchMyTasks();
+      });
+  };
+
   return (
     <div>
+      {taskModal.type === MODAL_TYPE.EDIT && taskModal.data && (
+        <AddEditTaskModal
+          isOpen={taskModal.open}
+          onClose={() =>
+            setTaskModal({ open: false, type: "", data: undefined })
+          }
+          onSubmit={handleUpdateTask}
+          initialData={taskModal.data}
+        />
+      )}
+      {taskModal.type === MODAL_TYPE.DELETE && (
+        <DeleteModal
+          isOpen={taskModal.open}
+          title="Delete Task"
+          desc="Do you want to Delete this tasj?"
+          onClose={(fetch = false) => {
+            setTaskModal((prev) => ({
+              ...prev,
+              open: !prev.open,
+              type: "",
+            }));
+            fetch && fetchMyTasks();
+          }}
+          onSubmit={handleDeleteTask}
+        />
+      )}
       <div className="px-10 pt-5 flex flex-row items-center justify-between">
         <span className="font-bold text-3xl">Browse Tasks</span>
         <input
@@ -92,6 +168,24 @@ const BrowseTasks = () => {
         role={ROLE.USER}
         tasks={filteredTasks}
         topActionComp={(task: TaskDetails) => {
+          return (
+            <div className="flex flex-row gap-[10px] ml-auto">
+              <button
+                className="underline underline-offset-2 cursor-pointer text-blue-500 font-bold"
+                onClick={() => handleEdit(task)}
+              >
+                Edit
+              </button>
+              <button
+                className="underline underline-offset-2 cursor-pointer text-blue-500 font-bold"
+                onClick={() => handleDelete(task)}
+              >
+                Delete
+              </button>
+            </div>
+          );
+        }}
+        bottomActionComp={(task: TaskDetails) => {
           if (task[TASK_FIELD.TaskStatus] === TaskStatus.COMPLETED) {
             return (
               <div className="w-full flex flex-row items-center justify-between">

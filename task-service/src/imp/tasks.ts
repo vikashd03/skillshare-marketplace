@@ -19,6 +19,7 @@ import {
   rSVPStatusToJSON,
   UpdateTaskOfferRsvpRequest,
   UpdateCompletionRsvpRequest,
+  UpdateTaskRequest,
 } from "@/proto/task";
 import prisma from "@/config/db";
 import { Category, Currency, RSVPStatus, TaskStatus } from "@/prisma";
@@ -34,6 +35,34 @@ const createTask = async (
     expectedStartDate: new Date(call.request.expectedStartDate),
   };
   const task = await prisma.task.create({
+    data,
+  });
+  callback(null, {
+    ...task,
+    expectedStartDate: new Date(task.expectedStartDate).toISOString(),
+    createdAt: new Date(task.createdAt).toISOString(),
+    updatedAt: new Date(task.updatedAt).toISOString(),
+    hourlyRateOffered: task.hourlyRateOffered!,
+    category: categoryFromJSON(task.category),
+    rateCurrency: currencyFromJSON(task.rateCurrency),
+    taskStatus: taskStatusFromJSON(task.taskStatus),
+    offerRsvp: rSVPStatusFromJSON(task.offerRsvp),
+    completionRsvp: rSVPStatusFromJSON(task.completionRsvp),
+  });
+};
+
+const updateTask = async (
+  call: ServerUnaryCall<UpdateTaskRequest, TaskResponse>,
+  callback: sendUnaryData<TaskResponse>
+) => {
+  const { id: taskId, ...taskDetails } = call.request;
+  const data = {
+    ...taskDetails,
+    category: categoryToJSON(taskDetails.category) as Category,
+    expectedStartDate: new Date(taskDetails.expectedStartDate),
+  };
+  const task = await prisma.task.update({
+    where: { id: taskId },
     data,
   });
   callback(null, {
@@ -185,6 +214,7 @@ const updateCompletionRsvp = async (
 
 export default {
   createTask: withErrorHandler(createTask),
+  updateTask: withErrorHandler(updateTask),
   getTask: withErrorHandler(getTask),
   listMyTasks: withErrorHandler(listMyTasks),
   offerForTask: withErrorHandler(offerForTask),

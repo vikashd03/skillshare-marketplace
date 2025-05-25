@@ -54,3 +54,17 @@ export const TaskStatusLabelMap: Record<TaskStatus, string> = {
   [TaskStatus.IN_PROGRESS]: "In Progress",
   [TaskStatus.COMPLETED]: "Completed",
 };
+
+export enum MODAL_TYPE {
+  CREATE = "CREATE",
+  EDIT = "EDIT",
+  DELETE = "DELETE",
+}
+
+export const protectedRoutes = ["/dashboard", "/tasks", "/skills"];
+export const unprotectedRoutes = ["/login", "/register"];
+
+export const roleRouteAccessMap = {
+  [ROLE.USER]: ["/dashboard", "/tasks"],
+  [ROLE.PROVIDER]: ["/dashboard", "/skills"],
+};

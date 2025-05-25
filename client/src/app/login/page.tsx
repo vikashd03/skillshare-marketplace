@@ -17,7 +17,6 @@ const initialFields = {
 };
 
 const LoginPage = () => {
-  // const [role, setAuthType] = useState<ROLE>(ROLE.USER);
   const [userDetails, setUserDetails] = useState<{
     [key in AUTH_FIELD]: string;
   }>(initialFields);
@@ -43,47 +42,6 @@ const LoginPage = () => {
     <div className="flex items-center justify-center">
       <div className="mt-[150px] w-[470px] h-[500px] border-zinc-400 border-2 rounded-3xl flex flex-col items-center overflow-clip">
         <div className="mt-[50px] text-4xl">Login</div>
-        {/* <div className="w-full h-[55px] border-b-2 flex items-center justify-center text-xl font-bold bg-blue-400 text-white">
-          Login
-        </div> */}
-        {/* <div className="w-full h-[50px] flex flex-row items-center justify-around px-12 mt-[15px]">
-          <div className="flex flex-row gap-2 items-center">
-            <input
-              id="user-login"
-              type="radio"
-              checked={role == ROLE.USER}
-              onChange={() => setAuthType(ROLE.USER)}
-              disabled={loading}
-            />
-            <label
-              htmlFor="user-login"
-              className={`text-lg cursor-pointer ${
-                role == ROLE.USER ? "underline underline-offset-4" : ""
-              }`}
-            >
-              User
-            </label>
-          </div>
-          <div className="flex flex-row gap-2 items-center">
-            <input
-              id="provider-login"
-              type="radio"
-              checked={role == ROLE.PROVIDER}
-              onChange={() => setAuthType(ROLE.PROVIDER)}
-              disabled={loading}
-            />
-            <label
-              htmlFor="provider-login"
-              className={`text-lg cursor-pointer ${
-                role == ROLE.PROVIDER
-                  ? "underline underline-offset-4"
-                  : ""
-              }`}
-            >
-              Provider
-            </label>
-          </div>
-        </div> */}
         <form className="flex flex-col items-center gap-[25px] mt-[30px]">
           <div className="flex flex-col">
             <label className="text-lg font-medium ml-1">Email</label>

@@ -4,6 +4,7 @@ package task;
 
 service TaskService {
   rpc CreateTask (CreateTaskRequest) returns (TaskResponse);
+  rpc UpdateTask (UpdateTaskRequest) returns (UpdateTaskResponse);
   rpc GetTask (GetTaskRequest) returns (TaskResponse);
   rpc ListMyTasks (ListMyTasksRequest) returns (ListTasksResponse);
   rpc OfferForTask (OfferForTaskRequest) returns (UpdateTaskResponse);
@@ -50,8 +51,19 @@ message CreateTaskRequest {
   string description = 3;
   string expected_start_date = 4;
   int32 expected_hours = 5;
-  string user_id = 8;
-  string provider_id = 9;
+  string user_id = 6;
+  string provider_id = 7;
+}
+
+message UpdateTaskRequest {
+  string id = 1;
+  Category category = 2;
+  string name = 3;
+  string description = 4;
+  string expected_start_date = 5;
+  int32 expected_hours = 6;
+  string user_id = 7;
+  string provider_id = 8;
 }
 
 message GetTaskRequest {

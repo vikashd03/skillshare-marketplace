@@ -4,16 +4,11 @@ import AddEditSkillModal from "@/components/AddEditSkillModal";
 import DeleteModal from "@/components/DeleteModal";
 import Skills, { SKILLS_FROM } from "@/components/Skills";
 import { API_URL } from "@/utils/config";
+import { MODAL_TYPE } from "@/utils/constants";
 import { requestInterceptor } from "@/utils/helper";
 import { SkillData, SkillDataWithProvider } from "@/utils/types";
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
-
-enum MODAL_TYPE {
-  CREATE = "CREATE",
-  EDIT = "EDIT",
-  DELETE = "DELETE",
-}
 
 const page = () => {
   const [skills, setSkills] = useState<SkillDataWithProvider[]>([]);

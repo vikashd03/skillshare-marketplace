@@ -12,12 +12,17 @@ import {
   taskStatusToJSON,
   roleFromJSON,
 } from "../proto/task";
-import { UserRequest } from "@/utils/models";
+import { ROLE, UserRequest } from "@/utils/models";
 import { getUsersForIds } from "@/services/user";
 import taskClient from "@/config/grpc";
 
 export const createTask = (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.USER) {
+      res.status(403).json({ error: "Only Users can Create Task" });
+      return;
+    }
+    
     const data = CreateTaskRequest.create({
       ...req.body,
       userId: req.user?.id,
@@ -41,8 +46,43 @@ export const createTask = (req: UserRequest, res: Response) => {
   }
 };
 
-export const getTask = async (req: Request, res: Response) => {
+export const updateTask = (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.USER) {
+      res.status(403).json({ error: "Only Users can Update Task" });
+      return;
+    }
+    
+    const data = CreateTaskRequest.create({
+      ...req.body,
+      userId: req.user?.id,
+    });
+    taskClient.updateTask(
+      { ...data, id: req.params.id },
+      (err: grpc.ServiceError | null, response: UpdateTaskResponse) => {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ error: err.message });
+          return;
+        }
+        res.json({
+          id: response.id,
+        });
+      }
+    );
+  } catch (err: any) {
+    console.log(err);
+    res.status(500).json({ error: "Error Creating Task" });
+  }
+};
+
+export const getTask = async (req: UserRequest, res: Response) => {
+  try {
+    if (req.user?.role !== ROLE.USER) {
+      res.status(403).json({ error: "Only Users can get Task" });
+      return;
+    }
+
     taskClient.getTask(
       GetTaskRequest.create({ id: req.params.id }),
       async (err: grpc.ServiceError | null, response: TaskResponse) => {
@@ -153,8 +193,13 @@ export const getMyTasks = async (req: UserRequest, res: Response) => {
   }
 };
 
-export const offerForTask = async (req: Request, res: Response) => {
+export const offerForTask = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.PROVIDER) {
+      res.status(403).json({ error: "Only Providers can offer to Task" });
+      return;
+    }
+
     taskClient.offerForTask(
       {
         id: req.params.id,
@@ -176,8 +221,13 @@ export const offerForTask = async (req: Request, res: Response) => {
   }
 };
 
-export const updateTaskOfferRsvp = async (req: Request, res: Response) => {
+export const updateTaskOfferRsvp = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.USER) {
+      res.status(403).json({ error: "Only Users can update task offer rsvp" });
+      return;
+    }
+
     taskClient.updateTaskOfferRsvp(
       {
         id: req.params.id,
@@ -198,8 +248,13 @@ export const updateTaskOfferRsvp = async (req: Request, res: Response) => {
   }
 };
 
-export const updateTaskStatus = async (req: Request, res: Response) => {
+export const updateTaskStatus = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.PROVIDER) {
+      res.status(403).json({ error: "Only Providers can update task status" });
+      return;
+    }
+
     taskClient.updateTaskStatus(
       {
         id: req.params.id,
@@ -220,8 +275,15 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCompletionRsvp = async (req: Request, res: Response) => {
+export const updateCompletionRsvp = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.USER) {
+      res
+        .status(403)
+        .json({ error: "Only Users can update task completion rsvp" });
+      return;
+    }
+
     taskClient.updateCompletionRsvp(
       {
         id: req.params.id,

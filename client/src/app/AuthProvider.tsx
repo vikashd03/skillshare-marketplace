@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useAppContext } from "./context";
 
 const AuthProvider = ({
@@ -10,13 +10,17 @@ const AuthProvider = ({
   children: ReactNode;
   token: string | null;
 }) => {
-  const { fetchUser } = useAppContext();
+  const { fetchUser, user } = useAppContext();
 
   useEffect(() => {
     token && fetchUser();
   }, []);
 
-  return children;
+  return user ? (
+    children
+  ) : (
+    <div className="h-full flex items-center justify-center">Loading...</div>
+  );
 };
 
 export default AuthProvider;

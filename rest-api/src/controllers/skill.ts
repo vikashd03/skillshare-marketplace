@@ -1,9 +1,14 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import prisma from "@/config/db";
-import { UserRequest } from "@/utils/models";
+import { ROLE, UserRequest } from "@/utils/models";
 
 export const addSkill = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.PROVIDER) {
+      res.status(403).json({ error: "Only Providers can Create Skill" });
+      return;
+    }
+
     const data = req.body;
     const user_id = req.user?.id;
 
@@ -23,8 +28,13 @@ export const addSkill = async (req: UserRequest, res: Response) => {
   }
 };
 
-export const updateSkill = async (req: Request, res: Response) => {
+export const updateSkill = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.PROVIDER) {
+      res.status(403).json({ error: "Only Providers can Update Skill" });
+      return;
+    }
+
     const skillId = req.params.id;
     const data = req.body;
 
@@ -42,8 +52,13 @@ export const updateSkill = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteSkill = async (req: Request, res: Response) => {
+export const deleteSkill = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.PROVIDER) {
+      res.status(403).json({ error: "Only Providers can Delete Skill" });
+      return;
+    }
+
     const skillId = req.params.id;
     await prisma.skill.delete({
       where: {
@@ -63,6 +78,11 @@ export const deleteSkill = async (req: Request, res: Response) => {
 
 export const getMySkills = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.PROVIDER) {
+      res.status(403).json({ error: "Only Providers can get skills" });
+      return;
+    }
+
     const user_id = req.user?.id;
     const skills = await prisma.skill.findMany({
       where: {
@@ -90,8 +110,13 @@ export const getMySkills = async (req: UserRequest, res: Response) => {
   }
 };
 
-export const getAllSkills = async (req: Request, res: Response) => {
+export const getAllSkills = async (req: UserRequest, res: Response) => {
   try {
+    if (req.user?.role !== ROLE.USER) {
+      res.status(403).json({ error: "Only Users can get all skills" });
+      return;
+    }
+
     const skills = await prisma.skill.findMany({
       include: {
         provider: {
