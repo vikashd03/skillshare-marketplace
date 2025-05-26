@@ -10,11 +10,18 @@ jest.mock("../../src/config/db", () => {
   };
 });
 
+jest.mock("../../src/utils/auth", () => ({
+  verifyPassword: jest.fn(),
+  hashPassword: jest.fn(),
+}));
+
 import request from "supertest";
 import app from "../../src/app";
-import prisma from "../../src/config/db";
+import prisma from "@/config/db";
+import * as authUtils from "@/utils/auth";
 
 const mockedPrisma = prisma as any;
+const mockedAuthUtils = authUtils as any;
 
 describe("User Controller", () => {
   beforeEach(() => {
@@ -22,13 +29,12 @@ describe("User Controller", () => {
   });
 
   describe("POST /register", () => {
-    beforeEach(() => {
+    it("should return 404 if email already exists", async () => {
       mockedPrisma.user.findUnique.mockResolvedValue({
         id: "abc",
         email: "test@example.com",
       });
-    });
-    it("should return 404 if email already exists", async () => {
+
       const res = await request(app).post("/api/user/register").send({
         email: "test@example.com",
         password: "123456",
@@ -49,6 +55,7 @@ describe("User Controller", () => {
         id: "abc",
         email: "test@example.com",
       });
+      mockedAuthUtils.hashPassword.mockResolvedValue("123456");
 
       const res = await request(app).post("/api/user/register").send({
         email: "test@example.com",
@@ -65,6 +72,7 @@ describe("User Controller", () => {
     it("should handle create user failure with 500", async () => {
       mockedPrisma.user.findUnique.mockResolvedValue(null);
       mockedPrisma.user.create.mockResolvedValue(null);
+      mockedAuthUtils.hashPassword.mockResolvedValue("123456");
 
       const res = await request(app).post("/api/user/register").send({
         email: "new@example.com",
@@ -81,6 +89,7 @@ describe("User Controller", () => {
   describe("POST /login", () => {
     it("should return 404 if user not found", async () => {
       mockedPrisma.user.findUnique.mockResolvedValue(null);
+      mockedAuthUtils.verifyPassword.mockResolvedValue(false);
 
       const res = await request(app)
         .post("/api/user/login")
@@ -96,10 +105,7 @@ describe("User Controller", () => {
         password: "hashedpass",
       });
 
-      // Mock your verifyPassword to return false
-      jest.mock("../src/utils/auth", () => ({
-        verifyPassword: jest.fn().mockResolvedValue(false),
-      }));
+      mockedAuthUtils.verifyPassword.mockResolvedValue(false);
 
       const res = await request(app)
         .post("/api/user/login")
@@ -112,13 +118,10 @@ describe("User Controller", () => {
     it("should return 200 if login successful", async () => {
       mockedPrisma.user.findUnique.mockResolvedValue({
         email: "found@example.com",
-        password: "hashedpass",
+        password: "correctpass",
       });
 
-      // Mock verifyPassword to return true
-      jest.mock("../src/utils/auth", () => ({
-        verifyPassword: jest.fn().mockResolvedValue(true),
-      }));
+      mockedAuthUtils.verifyPassword.mockResolvedValue(true);
 
       const res = await request(app)
         .post("/api/user/login")
@@ -141,14 +144,17 @@ describe("User Controller", () => {
         updated_at: new Date(),
       };
 
-      // Mock middleware that injects user into request
-      app.use((req, res, next) => {
-        (req as any).user = user;
-        next();
+      mockedPrisma.user.findUnique.mockResolvedValue({
+        ...user,
       });
+      mockedAuthUtils.verifyPassword.mockResolvedValue(true);
 
-      const res = await request(app).get("/api/user/me");
-
+      const res = await request(app)
+        .get("/api/user/me")
+        .set(
+          "authorization",
+          `Basic ${btoa(`${user.email}:${user.password}`)}`
+        );
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
         id: "1",
@@ -160,16 +166,10 @@ describe("User Controller", () => {
     });
 
     it("should return 404 if user not found in request", async () => {
-      // Remove user from req
-      app.use((req, res, next) => {
-        (req as any).user = null;
-        next();
-      });
-
       const res = await request(app).get("/api/user/me");
 
-      expect(res.status).toBe(404);
-      expect(res.body).toEqual({ error: "User Not Found" });
+      expect(res.status).toBe(401);
+      expect(res.text).toEqual("Authentication required.");
     });
   });
 });

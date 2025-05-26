@@ -9,54 +9,68 @@ export const register = async (
   req: Request<{}, {}, z.infer<typeof signupUserSchema>>,
   res: Response
 ) => {
-  const data = req.body;
+  try {
+    const data = req.body;
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: data.email },
-  });
-  if (existingUser) {
-    res.status(404).json({ error: "Email Already Taken" });
-    return;
+    const existingUser = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
+    if (existingUser) {
+      res.status(404).json({ error: "Email Already Taken" });
+      return;
+    }
+
+    const createdUser = await prisma.user.create({
+      data: {
+        ...data,
+        password: await hashPassword(data.password),
+      },
+    });
+    if (!createdUser) {
+      res.status(500).json({ error: "Error in creating User" });
+      return;
+    }
+
+    res.status(200).json({ msg: "Signed Up" });
+  } catch (err: any) {
+    console.error("Error Registering User:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to Registering User", detail: err.message });
   }
-
-  const createdUser = await prisma.user.create({
-    data: {
-      ...data,
-      password: await hashPassword(data.password),
-    },
-  });
-  if (!createdUser) {
-    res.status(500).json({ error: "Error in creating User" });
-    return;
-  }
-
-  res.status(200).json({ msg: "Signed Up" });
 };
 
 export const login = async (
   req: Request<{}, {}, z.infer<typeof signinUserSchema>>,
   res: Response
 ) => {
-  const data = req.body;
+  try {
+    const data = req.body;
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: data.email },
-  });
-  if (!existingUser) {
-    res.status(404).json({ error: "User Not Found" });
-    return;
+    const existingUser = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
+    if (!existingUser) {
+      res.status(404).json({ error: "User Not Found" });
+      return;
+    }
+
+    const validPassword = await verifyPassword(
+      data.password,
+      existingUser.password
+    );
+    if (!validPassword) {
+      res.status(401).json({ error: "Passowrd is Invalid" });
+      return;
+    }
+
+    res.status(200).json({ msg: "Signed In" });
+  } catch (err: any) {
+    console.error("Error Logging In User:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to Logging In User", detail: err.message });
   }
-
-  const validPassword = await verifyPassword(
-    data.password,
-    existingUser.password
-  );
-  if (!validPassword) {
-    res.status(401).json({ error: "Passowrd is Invalid" });
-    return;
-  }
-
-  res.status(200).json({ msg: "Signed In" });
 };
 
 export const getUser = async (req: UserRequest, res: Response) => {
