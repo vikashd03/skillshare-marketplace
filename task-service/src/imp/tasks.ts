@@ -22,7 +22,7 @@ import {
   UpdateTaskRequest,
 } from "@/proto/task";
 import prisma from "@/config/db";
-import { Category, Currency, RSVPStatus, TaskStatus } from "@/prisma";
+import { Category, Currency, RSVPStatus, Task, TaskStatus } from "@/prisma";
 import { withErrorHandler } from "@/utils/helper";
 
 const createTask = async (
@@ -125,7 +125,7 @@ const listMyTasks = async (
   });
 
   callback(null, {
-    tasks: tasks.map((task) => ({
+    tasks: tasks.map((task: Task) => ({
       ...task,
       expectedStartDate: new Date(task.expectedStartDate).toISOString(),
       createdAt: new Date(task.createdAt).toISOString(),
