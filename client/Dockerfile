@@ -10,7 +10,6 @@ COPY client/src ./src
 COPY client/.env ./
 COPY client/next.config.ts ./
 COPY client/postcss.config.mjs ./
-COPY client/next-env.d.ts ./
 
 RUN npm run build
 

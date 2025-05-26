@@ -8,11 +8,12 @@ services:
     depends_on:
       - rest-api
     env_file:
-      - ./client/.env
+      - ./client/.env.docker
     ports:
       - "3000:3000"
     volumes:
       - ./client:/app
+      - /app/node_modules
       - /app/.next
 
   postgres:
@@ -34,7 +35,7 @@ services:
     depends_on:
       - postgres
     env_file:
-      - ./shared/.env
+      - ./shared/.env.docker
     volumes:
       - ./shared/prisma:/app/prisma
 
@@ -46,7 +47,7 @@ services:
       - postgres
       - migrate
     env_file:
-      - ./task-service/.env
+      - ./task-service/.env.docker
     volumes:
       - ./shared/proto:/shared/proto
       - ./shared/prisma:/shared/prisma
@@ -62,7 +63,7 @@ services:
       - migrate
       - task-service
     env_file:
-      - ./rest-api/.env
+      - ./rest-api/.env.docker
     volumes:
       - ./shared/proto:/shared/proto
       - ./shared/prisma:/shared/prisma

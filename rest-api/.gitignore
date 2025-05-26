@@ -21,6 +21,7 @@ prisma/dev.db-journal
 .env
 .env.*.local
 .env.local
+.env.docker
 
 # Logs
 logs/

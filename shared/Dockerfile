@@ -6,7 +6,7 @@ COPY ./shared/package*.json ./
 
 RUN npm install
 
-COPY ./shared/prisma/schema.prisma ./prisma/schema.prisma
+COPY ./shared/prisma/ ./prisma/
 
 ENV PRISMA_SCHEMA_PATH=./prisma/schema.prisma
 
