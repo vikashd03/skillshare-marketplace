@@ -6,7 +6,7 @@
     "test": "export TASK_GRPC_PROTO=$(pwd)/../shared/proto/ && jest",
     "dev": "export TASK_GRPC_PROTO=$(pwd)/../shared/proto/ && ts-node-dev --respawn --transpile-only -r tsconfig-paths/register ./src/index.ts",
     "build": "tsc && tsc-alias",
-    "start": "node -r tsconfig-paths/register dist/index.js",
+    "start": "node -r tsconfig-paths/register dist/src/index.js",
     "generate:proto": "protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/proto --ts_proto_opt=outputServices=grpc-js,useExactTypes=false -I $(pwd)/../shared/proto $(pwd)/../shared/proto/task.proto",
     "generate:prisma": "export PRISMA_CLIENT_OUTPUT=$(pwd)/src/prisma/ && npx prisma generate --schema=$(pwd)/../shared/prisma/schema.prisma"
   },
