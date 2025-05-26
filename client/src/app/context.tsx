@@ -20,6 +20,8 @@ import {
 
 type AppContextType = {
   user: User | null;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
   setUser: Dispatch<SetStateAction<User | null>>;
   handleSession: (token: string) => void;
   fetchUser: () => void;
@@ -30,9 +32,11 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   const fetchUser = () => {
+    setLoading(true);
     axios
       .get(`${API_URL}/user/me`, {
         headers: {
@@ -43,7 +47,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .catch(() => {
         setUser(null);
         logout();
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const logout = () => {
@@ -59,7 +64,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ user, setUser, handleSession, fetchUser, logout }}
+      value={{
+        user,
+        loading,
+        setLoading,
+        setUser,
+        handleSession,
+        fetchUser,
+        logout,
+      }}
     >
       {children}
     </AppContext.Provider>

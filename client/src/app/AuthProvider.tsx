@@ -10,10 +10,14 @@ const AuthProvider = ({
   children: ReactNode;
   token: string | null;
 }) => {
-  const { fetchUser, user } = useAppContext();
+  const { fetchUser, setLoading } = useAppContext();
 
   useEffect(() => {
-    token && fetchUser();
+    if (token) {
+      fetchUser();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   return children;

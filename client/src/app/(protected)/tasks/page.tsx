@@ -142,7 +142,7 @@ const BrowseTasks = () => {
         <DeleteModal
           isOpen={taskModal.open}
           title="Delete Task"
-          desc="Do you want to Delete this tasj?"
+          desc="Do you want to Delete this task?"
           onClose={(fetch = false) => {
             setTaskModal((prev) => ({
               ...prev,

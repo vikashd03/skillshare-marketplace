@@ -7,18 +7,23 @@ import { redirect, usePathname } from "next/navigation";
 import { roleRouteAccessMap } from "@/utils/constants";
 
 const page = ({ children }: { children: ReactNode }) => {
-  const { user } = useAppContext();
+  const { user, loading } = useAppContext();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!user?.role) {
-      redirect("/login");
-    } else if (!roleRouteAccessMap[user?.role].includes(pathname)) {
-      redirect(roleRouteAccessMap[user?.role][0]);
+    if (!loading) {
+      if (!user) {
+        redirect("/login");
+      } else if (
+        user?.role &&
+        !roleRouteAccessMap[user?.role].includes(pathname)
+      ) {
+        redirect(roleRouteAccessMap[user?.role][0]);
+      }
     }
-  }, [user?.role]);
+  }, [user, loading]);
 
-  return user ? (
+  return !loading && user ? (
     <div>
       <NavBar />
       {children}
