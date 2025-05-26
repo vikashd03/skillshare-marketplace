@@ -11,6 +11,7 @@ import {
   TaskResponse,
   taskStatusToJSON,
   roleFromJSON,
+  DeleteTaskResponse,
 } from "../proto/task";
 import { ROLE, UserRequest } from "@/utils/models";
 import { getUsersForIds } from "@/services/user";
@@ -131,6 +132,32 @@ export const getTask = async (req: UserRequest, res: Response) => {
   } catch (err: any) {
     console.log(err);
     res.status(500).json({ error: "Error Getting Task" });
+  }
+};
+
+export const deleteTask = async (req: UserRequest, res: Response) => {
+  try {
+    if (req.user?.role !== ROLE.USER) {
+      res.status(403).json({ error: "Only Users can delete task" });
+      return;
+    }
+
+    taskClient.deleteTask(
+      {
+        id: req.params.id,
+      },
+      async (err: grpc.ServiceError | null, response: DeleteTaskResponse) => {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ error: err.message });
+          return;
+        }
+        res.status(200).json(response);
+      }
+    );
+  } catch (err: any) {
+    console.log(err);
+    res.status(500).json({ error: "Error Deleting Task" });
   }
 };
 

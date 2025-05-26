@@ -9,7 +9,6 @@ import {
   rSVPStatusFromJSON,
   categoryFromJSON,
   categoryToJSON,
-  Role,
   ListMyTasksRequest,
   OfferForTaskRequest,
   currencyToJSON,
@@ -20,10 +19,13 @@ import {
   UpdateTaskOfferRsvpRequest,
   UpdateCompletionRsvpRequest,
   UpdateTaskRequest,
+  DeleteTaskRequest,
+  DeleteTaskResponse,
 } from "@/proto/task";
 import prisma from "@/config/db";
 import { Category, Currency, RSVPStatus, Task, TaskStatus } from "@/prisma";
 import { withErrorHandler } from "@/utils/helper";
+import { roleIdMap } from "@/utils/constant";
 
 const createTask = async (
   call: ServerUnaryCall<CreateTaskRequest, TaskResponse>,
@@ -105,10 +107,18 @@ const getTask = async (
   });
 };
 
-const roleIdMap: Record<Role, string> = {
-  [Role.USER]: "userId",
-  [Role.PROVIDER]: "providerId",
-  [Role.UNRECOGNIZED]: "userId",
+const deleteTask = async (
+  call: ServerUnaryCall<DeleteTaskRequest, DeleteTaskResponse>,
+  callback: sendUnaryData<DeleteTaskResponse>
+) => {
+  await prisma.task.delete({
+    where: {
+      id: call.request.id,
+    },
+  });
+  callback(null, {
+    msg: "Task Deleted",
+  });
 };
 
 const listMyTasks = async (
@@ -215,6 +225,7 @@ const updateCompletionRsvp = async (
 export default {
   createTask: withErrorHandler(createTask),
   updateTask: withErrorHandler(updateTask),
+  deleteTask: withErrorHandler(deleteTask),
   getTask: withErrorHandler(getTask),
   listMyTasks: withErrorHandler(listMyTasks),
   offerForTask: withErrorHandler(offerForTask),

@@ -5,6 +5,7 @@ package task;
 service TaskService {
   rpc CreateTask (CreateTaskRequest) returns (TaskResponse);
   rpc UpdateTask (UpdateTaskRequest) returns (UpdateTaskResponse);
+  rpc DeleteTask (DeleteTaskRequest) returns (DeleteTaskResponse);
   rpc GetTask (GetTaskRequest) returns (TaskResponse);
   rpc ListMyTasks (ListMyTasksRequest) returns (ListTasksResponse);
   rpc OfferForTask (OfferForTaskRequest) returns (UpdateTaskResponse);
@@ -113,6 +114,14 @@ message OfferForTaskRequest {
 
 message UpdateTaskResponse {
   string id = 1;
+}
+
+message DeleteTaskRequest {
+  string id = 1;
+}
+
+message DeleteTaskResponse {
+  string msg = 1;
 }
 
 message UpdateTaskStatusRequest {

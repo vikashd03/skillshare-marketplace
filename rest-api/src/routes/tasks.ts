@@ -8,12 +8,14 @@ import {
   updateTaskOfferRsvp,
   updateCompletionRsvp,
   updateTask,
+  deleteTask,
 } from "@/controllers/tasks";
 
 const router = Router();
 
 router.post("/new", createTask);
 router.put("/:id", updateTask);
+router.delete("/:id", deleteTask);
 router.get("/me", getMyTasks);
 router.get("/:id", getTask);
 router.post("/:id/offer", offerForTask);
