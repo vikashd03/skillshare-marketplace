@@ -7,7 +7,7 @@ COPY client/*.json ./
 RUN npm install
 
 COPY client/src ./src
-COPY client/.env ./
+COPY client/.env.docker ./
 COPY client/next.config.ts ./
 COPY client/postcss.config.mjs ./
 
