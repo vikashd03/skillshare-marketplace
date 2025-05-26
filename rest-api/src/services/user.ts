@@ -1,5 +1,5 @@
-import prisma from "../config/db";
-import { User } from "../prisma";
+import prisma from "@/config/db";
+import { User } from "@/prisma";
 
 export const getUsersForIds = async (ids: string[]) => {
   const users = await prisma.user.findMany({

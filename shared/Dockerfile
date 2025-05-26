@@ -10,4 +10,4 @@ COPY ./shared/prisma/ ./prisma/
 
 ENV PRISMA_SCHEMA_PATH=./prisma/schema.prisma
 
-CMD ["npm", "run", "migrate-deploy"]
+CMD ["npm", "run", "migrate:deploy"]

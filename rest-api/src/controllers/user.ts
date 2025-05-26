@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import prisma from "../config/db";
+import prisma from "@/config/db";
 import { signinUserSchema, signupUserSchema } from "@/utils/validations";
 import { z } from "zod";
 import { hashPassword, verifyPassword } from "@/utils/auth";

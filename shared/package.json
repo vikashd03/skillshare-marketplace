@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "migrate-dev": "npx prisma migrate dev --name setup-db --skip-generate",
-    "migrate-deploy": "npx prisma migrate deploy --schema=$PRISMA_SCHEMA_PATH"
+    "migrate:dev": "npx prisma migrate dev --name setup-db --skip-generate",
+    "migrate:deploy": "npx prisma migrate deploy --schema=$PRISMA_SCHEMA_PATH"
   },
   "keywords": [],
   "author": "",

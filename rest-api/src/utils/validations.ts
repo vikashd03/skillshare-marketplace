@@ -1,14 +1,6 @@
 import { z } from "zod";
 import { ROLE, USER_TYPE } from "./models";
 
-// export const signupUserSchema = z.object({
-//   name: z.string().min(1, "Name is required"),
-//   email: z.string().email("Invalid email address"),
-//   ph_no: z.string().min(1, "Phone NUmber is required").optional(),
-//   address: z.string().min(1, "Address is required").optional(),
-//   password: z.string().min(6, "Password must be at least 6 characters"),
-// });
-
 export const signupUserSchema = z
   .object({
     role: z.enum([ROLE.USER, ROLE.PROVIDER]).default(ROLE.USER),

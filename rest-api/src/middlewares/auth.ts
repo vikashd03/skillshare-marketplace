@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "../config/db";
-import { verifyPassword } from "../utils/auth";
-import { UserRequest } from "../utils/models";
+import prisma from "@/config/db";
+import { verifyPassword } from "@/utils/auth";
+import { UserRequest } from "@/utils/models";
 
 const authorizationRequired = (res: Response) => {
   res.setHeader("WWW-Authenticate", 'Basic realm="Access to the site"');
