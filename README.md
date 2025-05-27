@@ -15,6 +15,7 @@ A full-stack skill-sharing marketplace built with:
 skillshare/
 ├── client/               # Next.js frontend
 ├── rest-api/             # Express API backend
+├── task-service/         # gRPC Task Service
 ├── shared/               # Shared Config between services
 ├── docker-compose.yml    # Multi-container setup
 └── README.md
