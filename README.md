@@ -3,7 +3,7 @@
 A full-stack skill-sharing marketplace built with:
 
 - 🧩 **Frontend**: Next.js 15 (React 19, Tailwind CSS)
-- 🛠 **Backend**: Express.js + TypeScript
+- 🛠 **Backend**: Express.js + gRPC + TypeScript
 - 🗃 **Database**: PostgreSQL with Prisma ORM
 - 🐳 **Deployment**: Docker + Docker Compose
 
@@ -190,10 +190,10 @@ docker exec -it skillshare-api npx prisma migrate deploy
 | Layer     | Tech                                 |
 |-----------|--------------------------------------|
 | Frontend  | Next.js, React 19, Tailwind CSS      |
-| Backend   | Express.js, TypeScript, gRPC         |
+| Backend   | Express.js, gRPC, TypeScript         |
 | Database  | PostgreSQL                           |
 | ORM       | Prisma                               |
-| Auth (opt)| Basic Auth / JWT / OAuth2            |
+| Auth (opt)| Basic Auth / JWT                     |
 | DevOps    | Docker, Docker Compose               |
 
 ---
